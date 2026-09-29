@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">⚙️ Panel de Administración (Vista de {{ user.username }})</span>
+            <a href="{% url 'catalogo' %}" class="btn btn-light">Volver al Catálogo</a>
+        </div>
+    </nav>
+
+    <div class="container min-vh-100">
+        <!-- TABLA 1: CONTRATOS -->
+        <h3 class="mb-3">Contratos Generados</h3>
+        <table class="table table-bordered bg-white shadow-sm mb-5">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th><th>Cliente</th><th>Fecha</th><th>Total Pagado</th><th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in contratos %}
+                <tr>
+                    <td>#{{ c.id }}</td><td>{{ c.usuario.username }}</td>
+                    <td>{{ c.fecha_creacion|date:"d M Y" }}</td><td>${{ c.total_pagado }}</td>
+                    <td><span class="badge bg-info">{{ c.estado }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- TABLA 2: INVENTARIO DE MAQUINARIA -->
+        <h3 class="mb-3">Inventario de Maquinaria</h3>
+        <table class="table table-bordered bg-white shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Máquina</th><th>Categoría</th><th>Tarifa Diaria</th><th>Stock Actual</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in maquinarias %}
+                <tr>
+                    <td>{{ m.nombre }}</td><td>{{ m.categoria.nombre }}</td>
+                    <td>${{ m.tarifa_diaria }}</td>
+                    
+                    <!-- Aquí es donde realmente va el formulario de stock -->
+                    <td>
+                        <form method="POST" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input type="hidden" name="actualizar_stock" value="1">
+                            <input type="hidden" name="maquinaria_id" value="{{ m.id }}">
+                            <input type="number" name="nuevo_stock" value="{{ m.stock_disponible }}" class="form-control form-control-sm me-2" style="width: 80px;" min="0">
+                            <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                        </form>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

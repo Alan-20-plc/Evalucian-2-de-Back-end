@@ -1,0 +1,45 @@
+[
+    {
+        "model": "aplicacion.categoria",
+        "pk": 1,
+        "fields": { "nombre": "Movimiento de Tierra" }
+    },
+    {
+        "model": "aplicacion.categoria",
+        "pk": 2,
+        "fields": { "nombre": "Generación Eléctrica" }
+    },
+    {
+        "model": "aplicacion.maquinaria",
+        "pk": 1,
+        "fields": {
+            "nombre": "Excavadora Oruga 20 Toneladas",
+            "categoria": 1,
+            "tarifa_diaria": 150000,
+            "garantia": 500000,
+            "stock_disponible": 3
+        }
+    },
+    {
+        "model": "aplicacion.maquinaria",
+        "pk": 2,
+        "fields": {
+            "nombre": "Retroexcavadora 4x4",
+            "categoria": 1,
+            "tarifa_diaria": 85000,
+            "garantia": 300000,
+            "stock_disponible": 5
+        }
+    },
+    {
+        "model": "aplicacion.maquinaria",
+        "pk": 3,
+        "fields": {
+            "nombre": "Generador Diésel 100 kVA",
+            "categoria": 2,
+            "tarifa_diaria": 45000,
+            "garantia": 200000,
+            "stock_disponible": 10
+        }
+    }
+]

@@ -2,28 +2,89 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Cliente</title>
+    <title>Crear Cuenta | ConstructRental</title>
+    
+    <!-- ========================================== -->
+    <!-- 1. LIBRERÍAS EXTERNAS                      -->
+    <!-- ========================================== -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #ebebeb; }
+        .registro-container { max-width: 450px; margin-top: 8vh; margin-bottom: 8vh; }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h2 class="text-center mb-4">Crear Cuenta de Cliente</h2>
-                        <form method="POST">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <button type="submit" class="btn btn-success w-100 mt-3">Registrarse</button>
-                        </form>
-                        <div class="text-center mt-3">
-                            <a href="{% url 'login' %}">¿Ya tienes cuenta? Inicia sesión aquí</a>
-                        </div>
+<body class="d-flex flex-column min-vh-100">
+    
+    <!-- ========================================== -->
+    <!-- 2. NAVBAR (BARRA SUPERIOR)                 -->
+    <!-- ========================================== -->
+    <nav class="navbar navbar-light shadow-sm py-3" style="background-color: #fff159;">
+        <div class="container justify-content-center">
+            <a href="{% url 'catalogo' %}" class="navbar-brand mb-0 h1 fw-bold text-dark text-decoration-none">
+                <i class="fas fa-tractor me-2"></i>ConstructRental
+            </a>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- 3. CONTENEDOR PRINCIPAL DEL REGISTRO       -->
+    <!-- ========================================== -->
+    <div class="container registro-container flex-grow-1">
+        <div class="card shadow-lg border-0 rounded-4 bg-white">
+            <div class="card-body p-5">
+                
+                <div class="text-center mb-4">
+                    <!-- Icono verde para diferenciar visualmente el Registro del Login -->
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="fas fa-user-plus fs-2"></i>
                     </div>
+                    <h4 class="fw-bold text-dark">Crear Cuenta</h4>
+                    <p class="text-muted small">Únete para arrendar equipos de construcción</p>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- 4. FORMULARIO DE CREACIÓN DE USUARIO       -->
+                <!-- ========================================== -->
+                <form method="POST">
+                    <!-- Protección contra suplantación de solicitudes -->
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <!-- MAGIA DE DJANGO: {{ form.as_p }} renderiza automáticamente 
+                             los inputs, labels y validaciones del UserCreationForm 
+                             que programé en views.py -->
+                        {{ form.as_p }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100 py-3 fw-bold rounded-pill shadow-sm mb-4">
+                        Registrarme
+                    </button>
+                </form>
+                
+                <!-- Enlace de retorno para usuarios que ya están registrados -->
+                <div class="text-center mt-2 pt-4 border-top">
+                    <p class="text-muted mb-3 small">¿Ya tienes una cuenta?</p>
+                    <!-- Redirige a la URL 'login' definida en urls.py -->
+                    <a href="{% url 'login' %}" class="btn btn-outline-success w-100 py-2 fw-bold rounded-pill shadow-sm">
+                        Iniciar sesión
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- ========================================== -->
+    <!-- 5. FOOTER CON DATOS DEL ALUMNO (EVA 2)     -->
+    <!-- ========================================== -->
+    <footer class="bg-white text-dark text-center py-4 mt-auto border-top">
+        <div class="container">
+            <h6 class="mb-2 fw-bold text-uppercase" style="font-size: 0.8rem;">Evaluación de Programación</h6>
+            <!-- Requisito de la rúbrica: Identidad del desarrollador -->
+            <p class="mb-1 text-secondary" style="font-size: 0.85rem;">Desarrollado por: <strong>Allan Andrewf Neumann Vega</strong></p>
+            <p class="mb-0 text-muted" style="font-size: 0.75rem;">Sección: AP-N4-C2 | Año: 2026 | INACAP Temuco</p>
+        </div>
+    </footer>
 </body>
 </html>

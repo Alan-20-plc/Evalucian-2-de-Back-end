@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Categoria, Maquinaria, CarroArriendo, ItemCarro, ContratoArriendo, DetalleContrato
+from .models import Categoria, Maquinaria, ContratoArriendo, DetalleContrato, CarroArriendo, ItemCarro
 
-# Registramos la categoría simple
+# Registramos Categoria de forma simple
 admin.site.register(Categoria)
 
 # Configuramos la vista de las máquinas para el profe

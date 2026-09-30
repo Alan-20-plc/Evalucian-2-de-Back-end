@@ -2,112 +2,252 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Arriendo de Maquinaria</title>
-    <!-- Importamos Bootstrap desde internet para tener un diseño profesional y ordenado sin escribir CSS a mano -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+    <title>ConstructRental | Arriendo de Maquinaria</title>
     
- <nav class="navbar navbar-dark bg-primary mb-4">
+    <!-- 1. IMPORTACIÓN DE LIBRERÍAS (Bootstrap 5 y FontAwesome) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f8f9fa; }
+        
+        /* ESTILOS DEL BANNER PRINCIPAL (HERO SECTION) */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 480px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* Efecto hover para las tarjetas del catálogo */
+        .card-hover:hover { 
+            transform: translateY(-3px); 
+            transition: all 0.2s ease; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12)!important; 
+        }
+        
+        /* Estilo para las cajas de categorías */
+        .cat-box { transition: all 0.2s; border-radius: 6px; border: 1px solid #e9ecef; }
+        .cat-box:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #ffc107; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    
+    <!-- ========================================== -->
+    <!-- 2. BARRA DE NAVEGACIÓN SUPERIOR            -->
+    <!-- ========================================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 sticky-top">
         <div class="container">
-            <span class="navbar-brand mb-0 h1">🚜 Sistema de Arriendo de Maquinaria</span>
+            <a href="{% url 'catalogo' %}" class="navbar-brand fw-bold text-dark text-decoration-none fs-4">
+                <i class="fas fa-hammer text-warning me-2"></i>ConstructRental
+            </a>
             
-            <div>
-                {% if user.is_authenticated %}
-                    <span class="text-white me-3">Hola, {{ user.username }}</span>
-                    
-                    {% if user.is_staff %}
-                        <a href="{% url 'panel_admin' %}" class="btn btn-danger me-2">Panel Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto align-items-center">
+                    <li class="nav-item px-2"><a class="nav-link fw-semibold text-dark" href="{% url 'catalogo' %}">Inicio</a></li>
+                    <li class="nav-item px-2"><a class="nav-link text-secondary" href="#catalogo-equipos">Catálogo</a></li>
+                    <li class="nav-item px-2"><a class="nav-link text-secondary" href="{% url 'ver_carro' %}">Mi Carro</a></li>
+                    <li class="nav-item px-2"><a class="nav-link text-secondary" href="#" onclick="alert('Módulo informativo de ConstructRental - INACAP 2026'); return false;">Nosotros</a></li>
+                    <li class="nav-item px-2"><a class="nav-link text-secondary" href="#" onclick="alert('Sistema activo de Arriendo de Maquinaria Pesada'); return false;">Soporte</a></li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                        <span class="text-dark me-3 fw-semibold small d-none d-lg-inline">
+                            <i class="fas fa-user-circle text-primary me-1"></i> {{ user.username }}
+                        </span>
+                        
+                        {% if user.is_staff %}
+                            <a href="{% url 'panel_admin' %}" class="btn btn-outline-danger btn-sm me-2 fw-bold">
+                                <i class="fas fa-cogs"></i> Admin
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'ver_carro' %}" class="btn btn-dark btn-sm me-3 fw-bold position-relative">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% if cantidad_carro > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ cantidad_carro }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm border-0" title="Cerrar sesión">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-dark btn-sm me-2 fw-semibold px-3">Ingresar</a>
+                        <a href="{% url 'registro' %}" class="btn btn-warning btn-sm fw-bold px-3 text-dark shadow-sm">Cotizar</a>
                     {% endif %}
-                    
-                    <a href="{% url 'ver_carro' %}" class="btn btn-warning me-2">Mi Carro ({{ cantidad_carro }})</a>
-                    
-                    <form action="{% url 'logout' %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-light">Cerrar Sesión</button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Iniciar Sesión</a>
-                    <a href="{% url 'registro' %}" class="btn btn-success">Registrarse</a>
-                {% endif %}
+                </div>
             </div>
         </div>
     </nav>
-    <div class="container min-vh-100">
-        <h2 class="mb-4">Catálogo de Equipos</h2>
-        
-        <!-- Fila de Bootstrap para organizar las tarjetas (cards) horizontalmente -->
-        <div class="row">
-            
-            <!-- INICIO DEL BUCLE DE DJANGO -->
-            <!-- Esta etiqueta itera sobre la lista 'maquinarias' que enviamos desde views.py -->
-            {% for maquina in maquinarias %}
-            
-            <!-- Columna: En pantallas medianas ocupará 4 espacios (lo que permite tener 3 tarjetas por fila) -->
-           <!-- Columna: En pantallas medianas ocupará 4 espacios -->
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    
-                    <!-- 1. La imagen va justo aquí, arriba del card-body y usando la variable "maquina" -->
-                    {% if maquina.imagen %}
-                        <img src="{{ maquina.imagen.url }}" class="card-img-top" alt="{{ maquina.nombre }}" style="height: 250px; object-fit: cover;">
-                    {% else %}
-                        <!-- Si aún no le subes foto, muestra un cuadro gris temporal -->
-                        <div class="bg-secondary text-white text-center d-flex align-items-center justify-content-center" style="height: 250px;">
-                            Sin imagen
-                        </div>
-                    {% endif %}
 
-                    <!-- 2. Aquí empieza el cuerpo de la tarjeta -->
-                    <div class="card-body">
-                        <!-- Título dinámico -->
-                        <h5 class="card-title">{{ maquina.nombre }}</h5>
-                        
-                        <!-- Categoría: Navega por la llave foránea para imprimir el nombre de la categoría -->
-                        <p class="text-muted">{{ maquina.categoria.nombre }}</p>
-                        
-                        <!-- Detalles de precios y stock traídos directamente desde PostgreSQL -->
-                        <p class="card-text">
-                            <strong>Tarifa Diaria:</strong> ${{ maquina.tarifa_diaria }}<br>
-                            <strong>Garantía:</strong> ${{ maquina.garantia }}<br>
-                            
-                            <!-- Etiqueta verde (badge) para resaltar las unidades disponibles -->
-                            <span class="badge bg-success">Stock: {{ maquina.stock_disponible }}</span>
-                        </p>
-                        
-                        <!-- Botón para la acción principal -->
-                       <a href="{% url 'agregar_al_carro' maquina.id %}" class="btn btn-outline-primary w-100">Agregar al Carro</a>
+    <!-- ========================================== -->
+    <!-- 3. BANNER PRINCIPAL (HERO SECTION)         -->
+    <!-- ========================================== -->
+    <header class="hero-section py-5">
+        <div class="container my-auto text-center text-md-start py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold text-white mb-3 text-uppercase" style="letter-spacing: 1px;">Arriendo de Maquinaria</h1>
+                    <p class="lead text-light mb-4 fs-5 opacity-90">Flota confiable, equipos de alto estándar y el respaldo que cada operación exige en la región.</p>
+                    
+                    <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                        <a href="#catalogo-equipos" class="btn btn-warning btn-lg fw-bold text-dark px-4 shadow">Ver Maquinaria &raquo;</a>
+                        <a href="{% url 'registro' %}" class="btn btn-outline-light btn-lg fw-semibold px-4">Cotizar Online</a>
                     </div>
                 </div>
             </div>
-            
-            <!-- ETIQUETA EMPTY: Si la base de datos está vacía, se muestra este mensaje -->
-            {% empty %}
-            <div class="col-12 text-center text-muted">
-                <p>No hay maquinarias disponibles en este momento.</p>
+        </div>
+
+        <div class="bg-dark bg-opacity-75 py-3 border-top border-secondary text-white small d-none d-md-block">
+            <div class="container">
+                <div class="row text-center text-md-start">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <i class="fas fa-envelope text-warning me-2"></i> Envíanos un correo: <strong>contacto@constructrental.cl</strong>
+                    </div>
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <i class="fas fa-map-marker-alt text-warning me-2"></i> Nuestra ubicación: <strong>Temuco / Padre Las Casas</strong>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <i class="fas fa-phone-alt text-warning me-2"></i> Hablemos: <strong>+56 9 5555 7832</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- 4. CONTENIDO PRINCIPAL (CATEGORÍAS Y EQUIPOS) -->
+    <!-- ========================================== -->
+    <div class="container py-5 flex-grow-1" id="catalogo-equipos">
+        
+        <!-- SECCIÓN DE CATEGORÍAS -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold text-dark mb-0">Categorías de Equipos</h3>
+                <a href="{% url 'catalogo' %}" class="text-primary text-decoration-none fw-semibold">Mostrar todas</a>
             </div>
             
-            <!-- FIN DEL BUCLE DE DJANGO -->
-            {% endfor %} 
-            
+            <div class="row g-3">
+                {% for cat in categorias %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <a href="?categoria={{ cat.id }}" class="text-decoration-none">
+                        <div class="card cat-box border-0 overflow-hidden bg-white shadow-sm">
+                            <div class="d-flex align-items-center p-2">
+                                <div class="d-flex justify-content-center align-items-center bg-light rounded" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-tractor text-secondary fs-4"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <span class="fw-bold text-dark" style="font-size: 0.95rem;">{{ cat.nombre }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% empty %}
+                <p class="text-muted small">No hay categorías registradas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE EQUIPOS DISPONIBLES (4 Columnas y clickeables) -->
+        <h3 class="fw-bold text-dark mb-4">Maquinaria Disponible</h3>
+        
+        <div class="row g-4">
+            {% for maquina in maquinarias %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden card-hover bg-white">
+                    
+                    <!-- Imagen clickeable que lleva al detalle -->
+                    <a href="{% url 'detalle_maquinaria' maquina.id %}" class="position-relative bg-light text-decoration-none d-block">
+                        {% if maquina.imagen %}
+                            <img src="{{ maquina.imagen.url }}" class="card-img-top p-3" alt="{{ maquina.nombre }}" style="height: 180px; object-fit: contain;">
+                        {% else %}
+                            <div class="text-secondary d-flex flex-column align-items-center justify-content-center" style="height: 180px;">
+                                <i class="fas fa-image fs-2 opacity-25 mb-1"></i>
+                                <span class="small text-muted">Sin fotografía</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="position-absolute top-0 end-0 p-2">
+                            {% if maquina.stock_disponible > 0 %}
+                                <span class="badge bg-success shadow-sm">Stock: {{ maquina.stock_disponible }}</span>
+                            {% else %}
+                                <span class="badge bg-danger shadow-sm">Agotado</span>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <div class="card-body d-flex flex-column p-4">
+                        <span class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">{{ maquina.categoria.nombre }}</span>
+                        
+                        <!-- Título clickeable que lleva al detalle -->
+                        <h5 class="card-title fw-bold mb-3" style="font-size: 1.05rem; height: 45px; overflow: hidden;">
+                            <a href="{% url 'detalle_maquinaria' maquina.id %}" class="text-dark text-decoration-none">{{ maquina.nombre }}</a>
+                        </h5>
+                        
+                        <div class="mt-auto bg-light p-3 rounded-3 mb-3">
+                            <div class="d-flex justify-content-between mb-1 small text-muted">
+                                <span>Garantía:</span>
+                                <span class="fw-semibold text-dark">${{ maquina.garantia }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="small text-muted">Diaria:</span>
+                                <span class="fw-bold text-success fs-5">${{ maquina.tarifa_diaria }}</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            {% if maquina.stock_disponible > 0 %}
+                                <a href="{% url 'agregar_al_carro' maquina.id %}" class="btn btn-warning w-100 fw-bold text-dark shadow-sm py-2">
+                                    <i class="fas fa-cart-plus me-1"></i> Arrendar Equipo
+                                tanto</a>
+                            {% else %}
+                                <button class="btn btn-secondary w-100 py-2 fw-bold" disabled>No Disponible</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-warning border-0 shadow-sm py-4">
+                    <i class="fas fa-exclamation-circle fs-3 mb-2 text-warning"></i>
+                    <h5 class="fw-bold">No se encontraron equipos</h5>
+                    <p class="text-muted mb-0">Prueba seleccionando otra categoría o mostrando todos los equipos.</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 
-    <!-- PIE DE PÁGINA (Footer) - Requisito obligatorio de la evaluación -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <!-- ========================================== -->
+    <!-- 5. FOOTER OFICIAL DE EVALUACIÓN (EVA 2)    -->
+    <!-- ========================================== -->
+    <footer class="bg-dark text-white text-center py-4 mt-auto border-top border-secondary">
         <div class="container">
-            <p class="mb-0">Desarrollado por: Allan Andrewf Neumann Vega</p>
-            <p class="mb-0">Estudiante de Programación | INACAP Temuco</p>
-            <p class="mb-0"><small>Sección: AP-N4-C2 | Año: 2026</small></p>
+            <h6 class="mb-2 fw-bold text-uppercase tracking-wider" style="font-size: 0.85rem;">Evaluación de Programación - INACAP Temuco</h6>
+            <p class="mb-1 text-light">Desarrollado por: <strong>Allan Andrewf Neumann Vega</strong></p>
+            <p class="mb-0 text-muted small">Sección: AP-N4-C2 | Año: 2026 | Sede Temuco</p>
         </div>
     </footer>
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="container">
-            <h6 class="mb-1">Evaluación de Programación - INACAP Temuco</h6>
-            <p class="mb-1 text-muted">Desarrollado por: Allan Neumann Vega</p>
-            <small class="text-muted">&copy; 2026 Sistema de Arriendo de Maquinaria Pesada</small>
-        </div>
-    </footer>
-   
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

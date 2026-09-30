@@ -53,22 +53,22 @@ MODELOS DE TRANSACCIÓN Y ESTADOS (Uso de CHOICES obligatorio)
 ====================================================================
 """
 class ContratoArriendo(models.Model):
-    # Propiedad CHOICES exigida por la pauta
-    ESTADOS_CONTRATO = [
-        ('PENDIENTE', 'Pendiente de Pago'),
-        ('PAGADO', 'Pagado - Stock Descontado'),
-        ('ENTREGADO', 'Equipo Entregado al Cliente'),
-        ('COMPLETADO', 'Equipo Devuelto - Stock Reincorporado'),
-        ('CANCELADO', 'Cancelado - Stock Liberado'),
+    # 1. Definimos las opciones fijas (CHOICES)
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('ACTIVO', 'Activo en Faena'),
+        ('FINALIZADO', 'Finalizado y Devuelto'),
+        ('CANCELADO', 'Cancelado'),
     ]
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20, choices=ESTADOS_CONTRATO, default='PENDIENTE')
-    total_pagado = models.IntegerField(default=0)
+    total_pagado = models.IntegerField()
+    # 2. Aplicamos el choices aquí:
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE')
 
     def __str__(self):
-        return f"Contrato #{self.id} - {self.usuario.username} - {self.estado}"
+        return f"Contrato #{self.id} - {self.usuario.username} ({self.get_estado_display()})"
 
 class DetalleContrato(models.Model):
     contrato = models.ForeignKey(ContratoArriendo, related_name='detalles', on_delete=models.CASCADE)

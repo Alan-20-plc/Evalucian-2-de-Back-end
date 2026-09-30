@@ -2,30 +2,102 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión - Arriendo de Maquinaria</title>
+    <title>Iniciar Sesión | ConstructRental</title>
+    
+    <!-- ========================================== -->
+    <!-- 1. LIBRERÍAS EXTERNAS                      -->
+    <!-- ========================================== -->
+    <!-- Utilizo Bootstrap 5 para el diseño responsivo sin escribir CSS manual -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Fondo gris claro para darle un estilo e-commerce similar a MercadoLibre */
+        body { background-color: #ebebeb; } 
+        /* Limito el ancho de la tarjeta para que el login no se deforme en PC */
+        .login-container { max-width: 420px; margin-top: 8vh; margin-bottom: 8vh; }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4 class="mb-0">🚜 Iniciar Sesión</h4>
+<body class="d-flex flex-column min-vh-100">
+    
+    <!-- ========================================== -->
+    <!-- 2. NAVBAR (BARRA SUPERIOR)                 -->
+    <!-- ========================================== -->
+    <nav class="navbar navbar-light shadow-sm py-3" style="background-color: #fff159;">
+        <div class="container justify-content-center">
+            <!-- Enlace que redirige a la vista 'catalogo' al hacer clic en el logo -->
+            <a href="{% url 'catalogo' %}" class="navbar-brand mb-0 h1 fw-bold text-dark text-decoration-none">
+                <i class="fas fa-tractor me-2"></i>ConstructRental
+            </a>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- 3. CONTENEDOR PRINCIPAL DEL FORMULARIO     -->
+    <!-- ========================================== -->
+    <div class="container login-container flex-grow-1">
+        <div class="card shadow-lg border-0 rounded-4 bg-white">
+            <div class="card-body p-5">
+                
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="fas fa-user-lock fs-2"></i>
                     </div>
-                    <div class="card-body">
-                        <!-- El formulario envía los datos por POST a la ruta de validación -->
-                        <form method="post">
-                            {% csrf_token %} <!-- Token de seguridad obligatorio de Django -->
-                            
-                            {{ form.as_p }} <!-- Esto dibuja los campos de Usuario y Contraseña automáticamente -->
-                            
-                            <button type="submit" class="btn btn-primary w-100 mt-3">Entrar al Sistema</button>
-                        </form>
+                    <h4 class="fw-bold text-dark">¡Hola! Ingresa tu usuario</h4>
+                </div>
+
+                <!-- LÓGICA DE ERRORES: Si el usuario se equivoca de clave, Django envía form.errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger rounded-3 small p-3 text-center shadow-sm">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Usuario o contraseña incorrectos.
                     </div>
+                {% endif %}
+
+                <!-- ========================================== -->
+                <!-- 4. FORMULARIO DE AUTENTICACIÓN DJANGO      -->
+                <!-- ========================================== -->
+                <form method="POST">
+                    <!-- Token de seguridad OBLIGATORIO en Django para evitar ataques CSRF -->
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label fw-semibold text-secondary">Usuario</label>
+                        <input type="text" name="username" autofocus required id="id_username" class="form-control form-control-lg py-2 bg-light border-0" placeholder="Escribe tu usuario">
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label fw-semibold text-secondary">Contraseña</label>
+                        <input type="password" name="password" required id="id_password" class="form-control form-control-lg py-2 bg-light border-0" placeholder="Escribe tu contraseña">
+                    </div>
+                    
+                    <!-- LÓGICA DE REDIRECCIÓN: Si el usuario intentó entrar a una ruta protegida (@login_required), 
+                         esta variable captura esa ruta y lo devuelve ahí automáticamente al iniciar sesión -->
+                    <input type="hidden" name="next" value="{{ next }}">
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-pill shadow-sm mb-4">
+                        Ingresar de forma segura
+                    </button>
+                </form>
+                
+                <!-- Botón secundario para redirigir a los clientes nuevos al registro -->
+                <div class="text-center mt-2 pt-4 border-top">
+                    <p class="text-muted mb-3 small">¿Eres nuevo en ConstructRental?</p>
+                    <a href="{% url 'registro' %}" class="btn btn-outline-primary w-100 py-2 fw-bold rounded-pill shadow-sm">
+                        Crear una cuenta gratis
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- ========================================== -->
+    <!-- 5. FOOTER CON DATOS DEL ALUMNO (EVA 2)     -->
+    <!-- ========================================== -->
+    <footer class="bg-white text-dark text-center py-4 mt-auto border-top">
+        <div class="container">
+            <h6 class="mb-2 fw-bold text-uppercase" style="font-size: 0.8rem;">Evaluación de Programación</h6>
+            <p class="mb-1 text-secondary" style="font-size: 0.85rem;">Desarrollado por: <strong>Allan Andrewf Neumann Vega</strong></p>
+            <p class="mb-0 text-muted" style="font-size: 0.75rem;">Sección: AP-N4-C2 | Año: 2026 | INACAP Temuco</p>
+        </div>
+    </footer>
 </body>
 </html>
